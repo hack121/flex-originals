@@ -1,61 +1,61 @@
 <template>
   <section :class="`content ${theme}`">
     <div class="inner">
-      <div class="profile__banner">
+      <div class="profile__banner" v-show="channelUser.user.username">
         <div class="profile__banner__background">
-          <div class="profile__avatar">
-            <img :src="channelInfo.profileAvatar" />
+          <div v-show="channelUser.settings.profileAvatar" class="profile__avatar">
+            <img :src="channelUser.settings.profileAvatar" alt="logo" />
           </div>
           <div class="social__media">
             <a
-              v-show="channelInfo.facebook"
-              :href="`https://facebook.com/${channelInfo.facebook}`"
+              v-show="channelUser.settings.facebook"
+              :href="`https://facebook.com/${channelUser.settings.facebook}`"
               target="_blank"
               style="color:white"
             >
               <i class="fab fa-facebook-square" style="font-size:20px"></i>
             </a>
             <a
-              v-show="channelInfo.instagram"
-              :href="`https://www.instagram.com/${channelInfo.instagram}`"
+              v-show="channelUser.settings.instagram"
+              :href="`https://www.instagram.com/${channelUser.settings.instagram}`"
               target="_blank"
               style="color:white"
             >
               <i class="fab fa-instagram" style="font-size:20px"></i>
             </a>
             <a
-              v-show="channelInfo.twitter"
-              :href="`https://twitter.com/${channelInfo.twitter}`"
+              v-show="channelUser.settings.twitter"
+              :href="`https://twitter.com/${channelUser.settings.twitter}`"
               target="_blank"
               style="color:white"
             >
               <i class="fab fa-twitter-square" style="font-size:20px"></i>
             </a>
             <a
-              v-show="channelInfo.redit"
-              :href="`https://www.reddit.com/r/${channelInfo.redit}`"
+              v-show="channelUser.settings.redit"
+              :href="`https://www.reddit.com/r/${channelUser.settings.redit}`"
               target="_blank"
               style="color:white"
             >
               <i class="fab fa-reddit-square" style="font-size:20px"></i>
             </a>
             <a
-              v-show="channelInfo.linkedin"
-              :href="`https://www.linkedin.com/in/${channelInfo.linkedin}`"
+              v-show="channelUser.settings.linkedin"
+              :href="`https://www.linkedin.com/in/${channelUser.settings.linkedin}`"
               target="_blank"
               style="color:white"
             >
               <i class="fab fa-linkedin" style="font-size:20px"></i>
             </a>
           </div>
-          <p class="channel__name">
-            {{channelUser.realm}} ({{channelUser.username}})
-            <i
-              v-show="channelInfo.verifiedChannel"
-              aria-label="verified"
-              class="fas fa-certificate"
-              style="color: lightgreen;"
-            ></i>
+          <p class="channel__name" v-show="channelUser.user.username">
+            {{channelUser.user.realm}} ({{channelUser.user.username}})
+            <img
+              src="/public/verified.svg"
+              width="20"
+              height="20"
+              alt="verified"
+            />
           </p>
           <button class="follow" style="background:red;" v-if="editMode" @click="onEditMode">
             <i class="far fa-edit"></i> Edit Mode On
@@ -63,7 +63,7 @@
           <button
             class="follow"
             style="background:#7289da;"
-            v-else-if="authUser === channelUser.id"
+            v-else-if="authUser === channelUser.user.id"
             @click="onEditMode"
           >
             <i class="far fa-edit"></i> Edit channel
@@ -71,40 +71,27 @@
           <button class="follow" v-else>
             <i class="far fa-star"></i> Follow
           </button>
-          <span class="followers">{{channelInfo.followers }} followers</span>
+          <span class="followers">{{channelUser.settings.followers }} followers</span>
         </div>
       </div>
       <content-grid></content-grid>
     </div>
-    <lazy-audio-player v-if="layout === 'song'" />
   </section>
 </template>
 
 <script>
-import * as types from "./../../../store/mutation-types";
-import { api } from "./../../../app/Api.js";
-import contentGrid from "./../Content/Grid/ContentGrid";
+import * as types from './../../../store/mutation-types';
+import utils from './../../../api/utils';
+import contentGrid from './../Content/Grid/ContentGrid';
 
 export default {
-  name: "media-content",
+  name: 'media-content',
   data: () => ({
     active: false,
-    channelInfo: {},
-    channelUser: ""
   }),
-  watch: {
-    $route() {
-      this.init();
-    }
-  },
   computed: {
-    layout() {
-      const name = this.$route.name;
-      if (name.split("@")[1]) {
-        return name.split("@")[1];
-      } else {
-        return null;
-      }
+    channelUser() {
+      return this.$store.state.contentUser;
     },
     theme() {
       return this.$store.state.theme;
@@ -113,21 +100,21 @@ export default {
       return this.$store.state.settings;
     },
     authUser() {
-      return this.$api.webStorage.local.get("$userId");
+      return this.$user.get('$userId');
     },
     editMode() {
       return this.$store.state.editMode;
-    }
+    },
   },
   components: {
-    contentGrid
+    contentGrid,
   },
   methods: {
-    onScroll: api.debounce(function() {}, 300),
+    onScroll: new utils().debounce(function() {}, 300),
     async onEditMode() {
       if (
-        (await this.$api.isLogged()) &&
-        this.authUser === this.channelUser.id
+        (await this.$user.isLogged()) &&
+        this.authUser === this.channelUser.user.id
       ) {
         if (this.editMode) {
           this.$store.commit(types.SELECT_BROWSER_ITEM, false);
@@ -137,26 +124,16 @@ export default {
         }
       }
     },
-    async init() {
-      if (this.$route.params.id) {
-        const content = await this.$store.dispatch("getContent", {
-          userId: this.$route.params.id
-        });
-
-        this.channelUser = content.data.user;
-        this.channelInfo = content.data.settings;
-        this.$store.commit(types.SET_CONTENT, content.data);
-      }
-    }
   },
   created() {
-    window.addEventListener("scroll", this.onScroll, false);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', this.onScroll, false);
+    }
   },
   destroyed() {
-    window.removeEventListener("scroll", this.onScroll, false);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('scroll', this.onScroll, false);
+    }
   },
-  mounted() {
-    this.init();
-  }
 };
 </script>

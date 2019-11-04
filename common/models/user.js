@@ -17,9 +17,9 @@ module.exports = function(User) {
       template: path.resolve(__dirname, '../../server/views/mails/verify.ejs'),
       host:
         process.env.NODE_ENV === 'production'
-          ? 'ec2-13-127-196-184.ap-south-1.compute.amazonaws.com'
+          ? 'flexoriginals.ml'
           : 'localhost',
-      port: process.env.NODE_ENV === 'production' ? '80' : '8080',
+      port: process.env.NODE_ENV === 'production' ? '80' : '3344',
       redirect: '/',
       restApiRoot: '/verify',
       user: user

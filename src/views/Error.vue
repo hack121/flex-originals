@@ -15,16 +15,10 @@
           <div class="home__inner">
             <h1>Whoops, looks like we lost one!</h1>
             <p>We cant find the page you were looking for.</p>
-            <img src="/public/icons/404.svg" width="200" height="200" />
-          </div>
-        </div>
-      </section>
-      <section>
-        <div class="home__container">
-          <div class="home__inner">
-            <a href="/">
+            <!-- <img src="/public/icons/404.svg" width="200" height="200" alt="logo" /> -->
+            <router-link to="/">
               <button class="btn-hover color">Get Back To Home</button>
-            </a>
+            </router-link>
           </div>
         </div>
       </section>
@@ -34,14 +28,14 @@
 </template>
 
 <script>
-import creatorFooter from "./../components/Landing/Footer";
-import creatorHeader from "./../components/Landing/Header";
+import creatorFooter from './../components/Landing/Footer';
+import creatorHeader from './../components/Landing/Header';
 
 export default {
-  name: "media-home",
+  name: 'fo-error',
   components: {
     creatorFooter,
-    creatorHeader
-  }
+    creatorHeader,
+  },
 };
 </script>

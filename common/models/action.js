@@ -10,7 +10,13 @@ const path = require('path');
 const app = require('../../server/server');
 const ThumbnailGenerator = require('../../server/API/Video');
 
-const VIDEO_EXT = ['video/mp4', 'video/x-msvideo'];
+const VIDEO_EXT = [
+  'video/mp4',
+  'video/x-msvideo',
+  'video/avi',
+  'application/x-troff-msvideo',
+  'video/msvideo'
+];
 const AUDIO_EXT = [
   'audio/mpeg',
   'audio/vnd.wav',
@@ -21,11 +27,21 @@ const AUDIO_EXT = [
 const IMAGE_EXT = [
   'image/gif',
   'image/jpeg',
+  'image/jpg',
   'image/svg+xml',
   'image/x-icon',
   'image/png'
 ];
-const EXTENSION = ['.png', '.jpeg', '.mp4', '.mp3', '.ogg', '.gif'];
+const EXTENSION = [
+  '.png',
+  '.jpeg',
+  '.mp4',
+  '.mp3',
+  '.ogg',
+  '.gif',
+  '.jpg',
+  '.avi'
+];
 /**
  * PROFILE IMAGE STORING STARTS
  */
@@ -43,6 +59,9 @@ module.exports = function(Action) {
     destination: (req, file, cb) => {
       const userId = req.params.id;
       const dirPath = `uploads/${userId}`;
+      fs.ensureDir('uploads', err => {
+        console.log(err);
+      });
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath);
       }
@@ -88,7 +107,7 @@ module.exports = function(Action) {
     const videoAnalytic = app.models.videoAnalytic;
     const audioAnalytic = app.models.audioAnalytic;
     const upload = multer({
-      storage: s3Storage,
+      storage: storage,
       fileFilter: function(req, file, callback) {
         var ext = path.extname(file.originalname);
         if (EXTENSION.indexOf(ext) == -1) {
@@ -106,7 +125,7 @@ module.exports = function(Action) {
         return res.json(err);
       } else {
         const { type } = req.params;
-        req.file.path = req.file.location;
+        req.file.path = req.file.path || req.file.location;
         try {
           if (type == 'video' && VIDEO_EXT.indexOf(req.file.mimetype) !== -1) {
             const video = await Videos.create({
@@ -154,8 +173,12 @@ module.exports = function(Action) {
               message: 'File not allowed'
             });
           }
-        } catch (err) {
-          return res.json(err);
+        } catch (error) {
+          return res.json({
+            err: 500,
+            message: 'Server Internal Error',
+            error
+          });
         }
       }
     });
@@ -197,17 +220,18 @@ module.exports = function(Action) {
           const tg = new ThumbnailGenerator({
             sourcePath: video.videoMeta.path,
             destinationPath: video.videoMeta.destination,
-            size: '170x100',
-            count: 3
+            size: '190x110',
+            count: 4
           });
 
           const thumb = await tg.generate();
           const thumbnails = thumb.map(x =>
             path.join(video.videoMeta.destination, x)
           );
+	          // const gif = await tg.generateGif({});
           return { thumbnails };
         } catch (err) {
-          throw new Error('File must be video type.', {}, 500);
+          throw new Error('File must be video type.');
         }
       } else {
         return { thumbnails: [] };
@@ -254,6 +278,7 @@ module.exports = function(Action) {
           });
 
           const compressVideo = await tg.resizeVideo(720);
+       //   console.log(await tg.generateGif({}));
           return { compressVideo };
         } catch (err) {
           return { err };
@@ -322,38 +347,60 @@ module.exports = function(Action) {
       });
 
       const video = await Videos.find({
+        include: ['videoAnalytics', 'user'],
+        order: 'published DESC',
         fields: {
+          published: true,
           videoOwnerId: true,
           id: true,
           title: true,
-          videoFile: true,
           thumbImage: true
         },
-        where: { videoOwnerId: id, visibility: 1 },
+        where: { videoOwnerId: id, visibility: { lt: 2 } },
         limit: limit
       });
       const audio = await Audios.find({
+        include: ['audioAnalytics', 'user'],
+        order: 'published DESC',
         fields: {
+          published: true,
           audioOwnerId: true,
           id: true,
           title: true,
           audioFile: true,
           thumbImage: true
         },
-        where: { audioOwnerId: id, visibility: 1 },
+        where: { audioOwnerId: id, visibility: { lt: 2 } },
         limit: limit
       });
       return { video, audio, user, settings };
     } else {
       const video = await Videos.find({
-        fields: { id: true, title: true, videoFile: true, thumbImage: true },
+        include: ['videoAnalytics', 'user'],
+        order: 'published DESC',
+        fields: {
+          published: true,
+          videoOwnerId: true,
+          id: true,
+          title: true,
+          thumbImage: true
+        },
         where: { visibility: 1 },
-        limit: limit / 2
+        limit: limit
       });
       const audio = await Audios.find({
-        fields: { id: true, title: true, audioFile: true, thumbImage: true },
+        include: ['audioAnalytics', 'user'],
+        order: 'published DESC',
+        fields: {
+          published: true,
+          audioOwnerId: true,
+          id: true,
+          title: true,
+          audioFile: true,
+          thumbImage: true
+        },
         where: { visibility: 1 },
-        limit: limit / 2
+        limit: limit
       });
       return { video, audio };
     }
@@ -441,6 +488,7 @@ module.exports = function(Action) {
         fields: {
           videoOwnerId: true,
           id: true,
+          published: true,
           name: true,
           title: true,
           videoFile: true,
@@ -454,6 +502,10 @@ module.exports = function(Action) {
         },
         where: { id, visibility: 1 }
       });
+
+      if (!video) {
+        throw new Error('Video not found.', {}, 404);
+      }
 
       const user = await User.findOne({
         fields: {
@@ -514,6 +566,7 @@ module.exports = function(Action) {
           audioOwnerId: true,
           id: true,
           name: true,
+          published: true,
           audioFile: true,
           thumbImage: true
         },

@@ -35,6 +35,12 @@
     "thumbImage": {
       "type": "string"
     },
+    "gif": {
+      "type": "string"
+    },
+    "thumbnails": {
+      "type": "object"
+    },
     "tags": {
       "type": "string"
     },
@@ -69,6 +75,11 @@
       "type": "boolean",
       "required": true,
       "default": false
+    },
+    "published": {
+      "type": "date",
+      "required": true,
+      "default": "$now"
     }
   },
   "validations": [],
@@ -82,6 +93,14 @@
       "type": "hasOne",
       "model": "videoAnalytic",
       "foreignKey": "videoId"
+    },
+    "videoLikes": {
+      "type": "hasMany",
+      "model": "videoLike",
+      "foreignKey": "videoLike",
+      "options": {
+        "nestRemoting": true
+      }
     }
   },
   "acls": [

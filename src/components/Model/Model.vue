@@ -8,16 +8,18 @@
   </div>
 </template>
 <script>
-import MRename from "./Rename/Rename";
-import MDelete from "./Delete/Delete";
-import MNewFolder from "./NewFolder/NewFolder";
+import MLogin from './Login/Login';
+import MDelete from './Delete/Delete';
+import MNewFolder from './NewFolder/NewFolder';
+import MShareModal from './ShareModal/ShareModal';
 
 export default {
-  name: "lazy-model",
+  name: 'lazy-model',
   components: {
-    MRename,
+    MLogin,
     MDelete,
-    MNewFolder
+    MNewFolder,
+    MShareModal,
   },
   computed: {
     layout() {
@@ -25,7 +27,7 @@ export default {
     },
     modal() {
       return this.$store.state.modal.state;
-    }
-  }
+    },
+  },
 };
 </script>

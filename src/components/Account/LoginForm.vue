@@ -55,68 +55,68 @@
     <div class="footer">
       <p>
         Don't have an account?
-        <a href="/signup">Sign up</a>
+        <router-link to="/signup">Sign up</router-link>
+      </p>
+      <br />
+      <p>
+        <router-link to="/app/@home">Cancel</router-link>
       </p>
     </div>
   </div>
 </template>
 <script>
-import * as types from "./../../store/mutation-types";
+import * as types from './../../store/mutation-types';
 
 export default {
-  name: "lazy-login",
+  name: 'lazy-login',
   data() {
     return {
       loading: false,
-      password: "",
-      email: ""
+      password: '',
+      email: '',
     };
   },
   computed: {
     Vname: function() {
       if (!this.name) return true;
-      return this.$api.regName.test(this.name);
+      return this.$utils.regName.test(this.name);
     },
     Vemail: function() {
       if (!this.email) return true;
-      return this.$api.regEmail.test(this.email);
+      return this.$utils.regEmail.test(this.email);
     },
     VmobileNumber: function() {
       if (!this.mobileNumber) return true;
-      return this.$api.regMobile.test(this.mobileNumber);
-    }
+      return this.$utils.regMobile.test(this.mobileNumber);
+    },
   },
   methods: {
     async submit() {
       this.loading = true;
       const data = {
         email: this.email,
-        password: this.password
+        password: this.password,
       };
+
       try {
-        const user = await this.$store.dispatch("login", data);
+        const user = await this.$store.dispatch('LOGIN', data);
         this.finalize(user);
-        this.loading = false;
       } catch (err) {
         this.loading = false;
       }
+      this.loading = false;
     },
-    async finalize(response) {
-      this.$api.webStorage.local.set("created", response.data.created);
-      this.$api.webStorage.local.set("$accessToken", response.data.id);
-      this.$api.webStorage.local.set("ttl", response.data.ttl);
-      this.$api.webStorage.local.set("$userId", response.data.userId);
-      this.$api.webStorage.local.set("user", JSON.stringify(response.data));
-
+    finalize(response) {
+      this.$user.auth(response.data);
       this.$store.commit(types.IS_AUTHENTICATED, true);
 
-      this.$nextTick(() => {
-        window.location.href = this.$route.query.redirect || "/app/@home";
-      });
+      if (typeof window !== 'undefined') {
+        window.location.href = this.$route.query.redirect || '/app/@home';
+      }
     },
     clear() {
       this.$refs.form.reset();
-    }
-  }
+    },
+  },
 };
 </script>

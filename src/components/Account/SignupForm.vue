@@ -78,23 +78,27 @@
     <div class="footer">
       <p>
         Already have an account?
-        <a href="/login">Login</a>
+        <router-link to="/login">Login</router-link>
+      </p>
+      <br />
+      <p>
+        <router-link to="/app/@home">Cancel</router-link>
       </p>
     </div>
   </div>
 </template>
 <script>
-import * as types from "./../../store/mutation-types";
+import * as types from './../../store/mutation-types';
 
 export default {
-  name: "lazy-signup",
+  name: 'lazy-signup',
   data() {
     return {
       loading: false,
-      password: "",
-      username: "",
-      name: "",
-      email: ""
+      password: '',
+      username: '',
+      name: '',
+      email: '',
     };
   },
   methods: {
@@ -106,19 +110,19 @@ export default {
         username: this.username,
         emailVerified: false,
         email: this.email,
-        password: this.password
+        password: this.password,
       };
 
       try {
-        const val = await this.$store.dispatch("signup", data);
+        const val = await this.$store.dispatch('SIGNUP', data);
 
         if (val.status == 200) {
           this.$store.commit(types.SHOW_SNACKBAR, {
             data: val.data.content,
-            color: "success"
+            color: 'success',
           });
           this.clear();
-          this.$router.push("/login");
+          this.$router.push('/login');
         }
         this.loading = false;
       } catch (err) {
@@ -127,7 +131,7 @@ export default {
     },
     clear() {
       this.$refs.form.reset();
-    }
-  }
+    },
+  },
 };
 </script>

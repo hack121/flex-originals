@@ -6,9 +6,64 @@
   "options": {
     "validateUpsert": true
   },
-  "properties": {},
+  "hidden": [
+    "visibility"
+  ],
+  "properties": {
+    "visibility": {
+      "type": "number",
+      "required": true,
+      "default": 1
+    }
+  },
   "validations": [],
-  "relations": {},
-  "acls": [],
+  "relations": {
+    "user": {
+      "type": "belongsTo",
+      "model": "user",
+      "foreignKey": "followOwnerId"
+    },
+    "channel": {
+      "type": "belongsTo",
+      "model": "user",
+      "foreignKey": "channel"
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "getFollowers"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "getFollow"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "doFollow"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "unFollow"
+    }
+  ],
   "methods": {}
 }

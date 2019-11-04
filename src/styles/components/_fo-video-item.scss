@@ -1,52 +1,65 @@
 .content-v-thumb {
   display: inline-block;
+  margin-bottom: 20px;
 
   .video__thumbnail {
-    width: 165px;
-    height: 100px;
+    width: 190px;
+    height: 110px;
     text-align: center;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
     display: inline-block;
-    margin: 5px 7px 50px 7px;
+    margin: 5px 5px 50px 5px;
     position: relative;
-    cursor: pointer;
-    background-color: rgba(0,0,0,.3);
-    // box-shadow: 0 14px 28px 0 rgba(0,0,0,.3);
-
+    background-color: rgba(0, 0, 0, 0.1);
+    
     .video__info {
       text-align: left;
 
-      &.light .title{
-        color: black !important;
+      .views {
+        font-weight: normal !important;
+        font-size: 13px;
       }
 
-      .views{
-        color: gray;
-        font-size: 13px; 
-      }
-    }
-  
       p {
         bottom: -30px;
         color: white;
         width: 100%;
       }
 
-      i {
-        margin: auto;
-        top: 50%;
-        left: 50%;
-        margin-left: -15px;
-        margin-top: -15px;
-        position: absolute;
-        color: white;
+      &.light .title {
+        color: black !important;
       }
+
+      &.dark .views {
+        color: #f1ebeb !important;
+      }
+
+      &.light .views {
+        color: #383838 !important;
+      }
+    }
+
+    p {
+      bottom: -30px;
+      color: white;
+      width: 100%;
+    }
+
+    i {
+      margin: auto;
+      top: 50%;
+      left: 50%;
+      margin-left: -15px;
+      margin-top: -15px;
+      position: absolute;
+      color: white;
+    }
   }
 
   .lazy-background::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     background: rgba(0, 0, 0, 0.1);
@@ -63,20 +76,20 @@
     display: block;
   }
 
-  @media only screen and (max-width: 700px) {
-    .video__thumbnail {
-      width: 150px;
-      height: 90px;
-      margin: 0px 5px 40px 10px;
+//   @media only screen and (max-width: 700px) {
+//     .video__thumbnail {
+//       width: 150px;
+//       height: 90px;
+//       margin: 0px 5px 40px 10px;
 
-      i {
-        margin: auto;
-        position: absolute;
-        font-size: 30px;
-        color: white;
-        top: 30px;
-        left: 60px;
-      }
-    }
-  }
+//       i {
+//         margin: auto;
+//         position: absolute;
+//         font-size: 30px;
+//         color: white;
+//         top: 30px;
+//         left: 60px;
+//       }
+//     }
+//   }
 }

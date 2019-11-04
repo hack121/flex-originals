@@ -1,38 +1,35 @@
 // The initial state
 export default {
+  uploadPercent: 0,
   // The loaded files
   content: {
     video: [],
-    audio: []
+    audio: [],
+  },
+  contentUser: {
+    user: {},
+    settings: {},
   },
   // Files loaded limit
   isAuthenticated: false,
+  autoplay: true,
   // Settings
   settings: {},
-  theme: 'dark',
+  theme: 'light',
   user: {},
   editMode: false,
-  appDrawer: {
-    action: true,
-    des: true,
-    mobileState: false
-  },
+  appDrawer: true,
+  following: [],
   // The currently selected items
   selectedItems: [],
-  // The currently selected items
-  uploadItems: [],
   // View
   view: 'grid',
   // The currently selected items
   uploadItemsMenu: [],
-  // The currently selected items
-  diskLoaded: [],
-  // The currently selected dir
-  selectedDirectory: 'my-drive',
   // The state of confirm delete model
   modal: {
     state: false,
-    type: null
+    type: null,
   },
   // The state of  settings
   showSettings: false,
@@ -40,16 +37,14 @@ export default {
   showMenu: {
     state: false,
     x: 0,
-    y: 0
+    y: 0,
   },
-  // The state of the infobar
-  showInfoBar: false,
   // The snackbar
   showsnackbar: {
     state: false,
     data: '',
     color: 'default',
-    time: 6000
+    time: 6000,
   },
   // The loading state
   isLoading: false,
@@ -59,12 +54,18 @@ export default {
   isMobile: false,
   // Token
   token: '',
-  // Select all files
-  selectAllFile: false,
-  // Select all files
-  selectAll: false,
-  // Select all folders
-  selectAllFolder: false,
   // The Search Query
-  search: ''
+  search: '',
+  player: {
+    audio: {
+      data: {},
+      volume: 5,
+      isPlaying: false,
+    },
+    video: {
+      data: {},
+      volume: 5,
+      isPlaying: false,
+    },
+  },
 };

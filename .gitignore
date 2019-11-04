@@ -1,15 +1,8 @@
 .DS_Store
 node_modules
-/server/node_modules
-/server/uploads
 /dist
-/build
-/client/*
-/.cache/*
 /uploads/*
-
-/tests/e2e/videos/
-/tests/e2e/screenshots/
+/.cache/*
 
 # local env files
 .env.local
@@ -28,6 +21,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
-
-#Electron-builder output
-/dist_electron

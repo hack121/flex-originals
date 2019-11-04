@@ -21,22 +21,23 @@
             >open source</a> to
             <a href="/business" class="text-white jumbotron-link">business</a>, you can host and review code, manage projects, and build software alongside 36 million&nbsp;developers.-->
           </p>
+          <router-link to="/app/@home">
+            <button class="btn-hover color">Get Started</button>
+          </router-link>
         </div>
       </div>
     </section>
     <section>
       <div class="home__container">
-        <div class="home__inner">
-          <a href="/app/@home">
-            <button class="btn-hover color">Get Started</button>
-          </a>
-        </div>
+        <div class="home__inner"></div>
       </div>
       <br />
       <div class="home__container">
         <h2>Architecture of project</h2>
         <br />
-        <img src="/public/project.png" slt="arch" />
+        <div class="arc_inner">
+          <img src="/public/project.png" slt="arch" />
+        </div>
         <br />
         <div class="home__inner">
           <p>
@@ -50,6 +51,6 @@
 </template>
 <script>
 export default {
-  name: "landing-body"
+  name: 'landing-body',
 };
 </script>

@@ -1,0 +1,66 @@
+.feed {
+  .like-btn {
+    position: absolute;
+    right: 250px;
+    text-align: left;
+    outline: none;
+    padding: 0 10px;
+    cursor: pointer;
+    overflow: visible !important;
+    z-index: 50;
+  }
+
+  .like-btn .reaction-box {
+    width: 290px;
+    height: 55px;
+    position: absolute;
+    background: #ffffff;
+    border-radius: 28px;
+    top: -55px;
+    left: -10px;
+    display: none;
+    box-shadow: 0 5px 10px rgb(94, 94, 94);
+
+    button {
+      outline: none;
+      cursor: pointer;
+    }
+  }
+  .like-btn .reaction-box .reaction-icon {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    border-radius: 20px;
+    margin: -10px -1px 0 8px;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    transform: translate(0, 100px) scale(0);
+  }
+  .like-btn .reaction-box .reaction-icon label {
+    padding: 3px 5px 3px 5px;
+    position: relative;
+    top: -10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #333;
+    background: #fff;
+    visibility: hidden;
+  }
+  .like-btn:hover .reaction-box {
+    display: block;
+  }
+  .like-btn:hover .reaction-box .reaction-icon.show {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  .like-btn:hover .reaction-box .reaction-icon:hover {
+    transform: scale(1.4);
+    transition: 0.3s;
+    transform-origin: bottom;
+  }
+  .like-btn:hover .reaction-box .reaction-icon:hover label {
+    visibility: visible;
+  }
+}

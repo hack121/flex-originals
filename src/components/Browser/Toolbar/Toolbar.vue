@@ -1,70 +1,85 @@
 <template>
   <menu type="toolbar" :class="`menu ${theme}`">
-    <div @click="toggleMenu" style="cursor: pointer; margin-right:30px;" v-if="isAuthenticated">
+    <div @click="toggleMenu" style="cursor: pointer; margin-right:30px;">
       <i class="fas fa-align-justify"></i>
     </div>
-    <span :class="`menu__button ${theme}`">
+    <button :class="`menu__button ${theme}`">
       <i class="fas fa-fire"></i>Trending
-    </span>
-    <span :class="`menu__button ${theme}`">
+    </button>
+    <button :class="`menu__button ${theme}`">
       <i class="far fa-clock"></i>Watch Later
-    </span>
-    <span :class="`menu__button ${theme}`">
+    </button>
+    <button :class="`menu__button ${theme}`">
       <i class="far fa-heart"></i>Liked Videos
-    </span>
-    <span :class="`menu__button ${theme}`">
+    </button>
+    <button :class="`menu__button ${theme}`">
       <i class="fab fa-rev"></i>New Releases
-    </span>
-    <div :class="`menu-right ${theme}`">
-      <span class="icon">
+    </button>
+    <input type="text" placeholder="Search...." v-model="search" />
+    <!-- <div :class="`menu-right ${theme}`"> -->
+    <!-- <span class="icon">
         <i class="fas fa-search search__icon"></i>
       </span>
       <input type="text" placeholder="Search...." />
       <span class="icon">
         <i class="fas fa-bell"></i>
-      </span>
-      <span class="icon">
+    </span>-->
+    <!-- <span class="icon">
         <i class="fas fa-ellipsis-v"></i>
-      </span>
-    </div>
+    </span>-->
+    <!-- </div> -->
   </menu>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import * as types from "./../../../store/mutation-types";
+import { mapGetters } from 'vuex';
+import * as types from './../../../store/mutation-types';
 
 export default {
-  name: "toolbar",
+  name: 'toolbar',
+  data() {
+    return {
+      appDrawer: false,
+    };
+  },
   computed: {
-    ...mapGetters(["isMobile", "isLoading", "appDrawer", "isAuthenticated", "theme"]),
-     theme() {
+    ...mapGetters(['isMobile', 'isAuthenticated', 'theme']),
+    search: {
+      set(val) {
+        this.$store.commit(types.SET_SEARCH_QUERY, val);
+      },
+      get() {
+        return this.$store.state.search;
+      },
+    },
+    theme() {
       return this.$store.state.theme;
-    }
+    },
   },
   methods: {
     toggleMenu: function() {
-      if (this.isMobile && !this.appDrawer.mobileState) {
-        this.$store.commit(types.APP_DRAWER, {
-          action: true,
-          des: true,
-          mobileState: true
-        });
-      } else if (this.appDrawer.action) {
-        this.$store.commit(types.APP_DRAWER, {
-          action: false,
-          des: false,
-          mobileState: false
-        });
+      if (this.appDrawer) {
+        this.$emit('toggleAppDrawer', false);
+        this.appDrawer = false;
+        window.localStorage.setItem('APP_DRAWER', false);
       } else {
-        this.$store.commit(types.APP_DRAWER, {
-          action: true,
-          des: true,
-          mobileState: true
-        });
+        this.$emit('toggleAppDrawer', true);
+        this.appDrawer = true;
+        window.localStorage.setItem('APP_DRAWER', true);
+      }
+    },
+  },
+  beforeMount() {
+    if (typeof window !== 'undefined') {
+      if (window.localStorage.getItem('APP_DRAWER') == 'true') {
+        this.appDrawer = true;
+      } else if (window.localStorage.getItem('APP_DRAWER') == 'false') {
+        this.appDrawer = false;
+      } else {
+        this.appDrawer = true;
       }
     }
-  }
+  },
 };
 </script>
 

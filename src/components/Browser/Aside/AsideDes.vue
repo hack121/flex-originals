@@ -1,43 +1,42 @@
 <template>
-  <aside :class="`features ${theme}`" v-if="isAuthenticated">
+  <aside :class="`features ${theme}`">
     <header class="features-header focusable">
-      <h3 role="header" class="features-header-name">Flex Originals</h3>
+      <img class="features-header-name" src="/public/text_logo2.png" alt="logo" />
     </header>
-    <!-- <input type="text" placeholder="Search..." /> -->
     <section class="features-list">
       <header class="features-list-header focusable">
-        <h5>Suscriptions</h5>
+        <h5>FOLLOWING</h5>
       </header>
 
       <ul class="features-list-text">
-        <li class="channel channel-text">
-          <span class="channel-name">Machine Learning</span>
-          <button class="button" role="button" aria-label="settings">
-            <i class="fa fa-cog"></i>
-          </button>
-        </li>
-
-        <li class="channel focusable channel-text">
-          <span class="channel-name">Funny Videos</span>
-          <button class="button" role="button" aria-label="settings">
-            <i class="fa fa-cog"></i>
-          </button>
-        </li>
+        <router-link
+          :to="`/app/@channel/${channel.channel.id}`"
+          v-for="channel in channels"
+          :key="channel.id"
+        >
+          <li class="channel channel-text">
+            <span class="channel-name">{{ channel.channel.realm }}</span>
+            <button class="button" role="button" aria-label="settings">
+              <i class="fa fa-cog"></i>
+            </button>
+          </li>
+        </router-link>
       </ul>
     </section>
 
     <footer :class="`features-footer ${theme}`">
-      <img
-        class="avatar"
-        alt="Avatar"
-        :src="settings.profileAvatar || '/public/icons/logo.png'"
-        @click="$router.push(`/app/@channel/${user.id}`)"
-        style="cursor:pointer"
-      />
-      <div class="features-footer-details">
+      <router-link :to="`/app/@channel/${user.id}`">
+        <img
+          class="avatar"
+          alt="Avatar"
+          :src="settings.profileAvatar || '/public/icons/logo.png'"
+          style="cursor:pointer"
+        />
+      </router-link>
+      <!-- <div class="features-footer-details">
         <span class="username">{{user.realm || 'Anonymous'}}</span>
         <span class="tag">{{user.username || 'Flex'}}</span>
-      </div>
+      </div>-->
       <div class="features-footer-controls button-group">
         <button role="button" aria-label="Mute" class="button button-mute">
           <i class="fa fa-headphones"></i>
@@ -45,37 +44,48 @@
         <button role="button" aria-label="Deafen" class="button button-deafen">
           <i class="fa fa-microphone"></i>
         </button>
-        <button
-          role="button"
-          aria-label="Settings"
-          class="button button-settings"
-          @click="$router.push('/app/@settings')"
-        >
-          <i class="fa fa-cog"></i>
-        </button>
+        <router-link to="/app/@settings">
+          <button role="button" aria-label="Settings" class="button button-settings">
+            <i class="fa fa-cog"></i>
+          </button>
+        </router-link>
       </div>
     </footer>
   </aside>
 </template>
 
 <script>
+import * as types from './../../../store/mutation-types';
+
 export default {
-  name: "lazy-aside",
+  name: 'lazy-aside',
   data() {
     return {};
   },
   computed: {
     settings() {
       return this.$store.state.settings;
-    },   theme() {
+    },
+    theme() {
       return this.$store.state.theme;
     },
-    isAuthenticated() {
-      return this.$store.state.isAuthenticated;
+    channels() {
+      return this.$store.state.following;
     },
     user() {
-      return this.$store.state.user;
+      return this.$user.getUser();
+    },
+  },
+  async beforeMount() {
+    if (typeof window != 'undefined') {
+      const userId = this.$user.get('$userId');
+      if (userId) {
+        const res = await this.$store.dispatch('GET_FOLLOWERS', {
+          followId: userId,
+        });
+        this.$store.commit(types.SET_FOLLOWING, res.data);
+      }
     }
-  }
+  },
 };
 </script>

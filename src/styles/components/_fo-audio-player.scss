@@ -1,18 +1,20 @@
 .music_player {
-  flex: 1;
-  bottom: 0;
   display: flex;
   width: 100%;
-  min-width: 800px;
   z-index: 50;
   padding: 0.9em 0px;
+  min-width: 1000px;
   background: #252a2e;
   border-top: 1px solid #18191a;
+  border-bottom: 1px solid #18191a;
+  border-right: 1px solid #18191a;
 
-  &.light{
+  &.light {
     background-color: white !important;
-    color: #18191a !important; 
-    border-top:1px solid #dadada !important; 
+    color: #18191a !important;
+    border-top: 1px solid #dadada !important;
+    border-bottom: 1px solid #dadada !important;
+    border-right: 1px solid #dadada !important;
   }
 
   .inner {
@@ -22,9 +24,9 @@
     color: white;
     overflow: hidden !important;
 
-    &.light{
+    &.light {
       background-color: white !important;
-      color: #18191a !important; 
+      color: #18191a !important;
     }
 
     .albumImage {
@@ -62,7 +64,6 @@
 
       .slider {
         appearance: none;
-        outline: none;
         width: 100%;
         margin: auto;
         height: 4px;
@@ -72,28 +73,29 @@
         background: rgb(104, 103, 103);
 
         .buffer {
-          outline: none;
           height: 4px;
-          z-index: 46;
+          z-index: 45;
+          top: 8px;
+          position: absolute;
           border-radius: 4px;
           background: grey;
+        }
 
-          .audio-progress {
-            outline: none;
-            height: 4px;
-            border-radius: 4px;
-            z-index: 45;
+        .audio-progress {
+          height: 4px;
+          border-radius: 4px;
+          z-index: 45;
+          background: $color-error;
+
+          .circle {
+            position: relative;
+            right:-6px;
+            top: -3px;
+            width: 10px;
+            height: 10px;
+            float: right;
             background: $color-error;
-
-            .circle {
-              position: relative;
-              top: -3px;
-              width: 10px;
-              height: 10px;
-              float: right;
-              background: $color-error;
-              border-radius: 50%;
-            }
+            border-radius: 50%;
           }
         }
 

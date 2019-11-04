@@ -35,6 +35,12 @@
     "thumbImage": {
       "type": "string"
     },
+    "gif": {
+      "type": "string"
+    },
+    "thumbnails": {
+      "type": "object"
+    },
     "tags": {
       "type": "string"
     },
@@ -69,6 +75,11 @@
       "type": "boolean",
       "required": true,
       "default": false
+    },
+    "published": {
+      "type": "date",
+      "required": true,
+      "default": "$now"
     }
   },
   "validations": [],
@@ -78,10 +89,18 @@
       "model": "user",
       "foreignKey": "audioOwnerId"
     },
-    "audioanalytics": {
+    "audioAnalytics": {
       "type": "hasOne",
-      "model": "Audioanalytic",
+      "model": "audioAnalytic",
       "foreignKey": "audioId"
+    },
+    "audioLikes": {
+      "type": "hasMany",
+      "model": "audioLike",
+      "foreignKey": "audioLike",
+      "options": {
+        "nestRemoting": true
+      }
     }
   },
   "acls": [

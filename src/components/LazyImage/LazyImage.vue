@@ -2,22 +2,23 @@
   <div
     :class="`fo-image fo-background ${hover ? 'hover' : 'not'} ${active ? 'active': ''}`"
     ref="lazyBackground"
+    @click="$emit('click')"
     :alt="alt"
   >
-    <div v-if="isLoading && !lazySrc" class="loader-1 center">
-      <span></span>
+    <div v-show="isLoading && !lazySrc" class="timeline-item">
+      <div class="animated-background"></div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "lazy-image",
+  name: 'lazy-image',
   data() {
     return {
-      currentSrc: "",
+      currentSrc: '',
       isLoading: true,
-      calculatedAspectRatio: ""
+      calculatedAspectRatio: '',
     };
   },
   props: {
@@ -25,34 +26,34 @@ export default {
     contain: Boolean,
     src: {
       type: [String, Object],
-      default: ""
+      default: '',
     },
     hover: Boolean,
     lazySrc: String,
     active: Boolean,
-    srcset: String
+    srcset: String,
   },
   computed: {
     computedAspectRatio() {
       return this.normalisedSrc.aspect;
     },
     normalisedSrc() {
-      return typeof this.src === "string"
+      return typeof this.src === 'string'
         ? {
             src: this.src,
             srcset: this.srcset,
             lazySrc: this.lazySrc,
-            aspect: Number(this.aspectRatio || this.calculatedAspectRatio)
+            aspect: Number(this.aspectRatio || this.calculatedAspectRatio),
           }
         : {
             src: this.src.src,
             srcset: this.srcset || this.src.srcset,
             lazySrc: this.lazySrc || this.src.lazySrc,
             aspect: Number(
-              this.aspectRatio || this.src.aspect || this.calculatedAspectRatio
-            )
+              this.aspectRatio || this.src.aspect || this.calculatedAspectRatio,
+            ),
           };
-    }
+    },
   },
   mounted() {
     this.init();
@@ -61,7 +62,7 @@ export default {
     cachedImage() {
       if (!(this.normalisedSrc.src || this.normalisedSrc.lazySrc)) return [];
       const src = this.isLoading ? this.normalisedSrc.lazySrc : this.currentSrc;
-      this.$refs.lazyBackground.classList.remove("fo-background");
+      this.$refs.lazyBackground.classList.remove('fo-background');
       this.$refs.lazyBackground.style.backgroundImage = `url("${src}")`;
     },
     init() {
@@ -80,11 +81,13 @@ export default {
       this.cachedImage();
     },
     onError() {
-      console.warn(
+      // if (process.env.NODE_ENV !== 'production') {
+      console.error(
         `Image load failed\n\n` + `src: ${this.normalisedSrc.src}`,
-        this
+        this,
       );
-      this.$emit("error", this.src);
+      // }
+      this.$emit('error', this.src);
     },
     getSrc() {
       if (this.image) this.currentSrc = this.image.currentSrc || this.image.src;
@@ -98,12 +101,14 @@ export default {
           image
             .decode()
             .catch(err => {
-              console.log(
+              // if (process.env.NODE_ENV !== 'production') {
+              console.warn(
                 `Failed to decode image, trying to render anyway\n\n` +
                   `src: ${this.normalisedSrc.src}` +
-                  (err.message ? `\nOriginal error: ${err.message}` : ""),
-                this
+                  (err.message ? `\nOriginal error: ${err.message}` : ''),
+                this,
               );
+              // }
             })
             .then(this.onLoad);
         } else {
@@ -131,13 +136,13 @@ export default {
       };
 
       poll();
-    }
+    },
   },
   watch: {
     src() {
       if (!this.isLoading) this.init();
       else this.loadImage();
-    }
-  }
+    },
+  },
 };
 </script>

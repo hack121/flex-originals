@@ -20,11 +20,11 @@
       <div class="slider_container">
         <span class="time">{{ currentTime }}</span>
         <div class="slider" ref="progress" @mousedown="scrub" data-direction="horizontal">
-          <div class="buffer" :style="`width:${bufferPercent}%`">
-            <div class="audio-progress" :style="`width:${currentProgressBar}%`">
-              <div class="circle"></div>
-            </div>
+          <div class="audio-progress" :style="`width:${currentProgressBar}%`">
+            <div class="circle"></div>
           </div>
+          <!-- <div class="buffer" :style="`width:${bufferPercent}%`"> -->
+          <!-- </div> -->
         </div>
         <span class="time">{{ trackDuration }}</span>
         <i v-show="volume" class="audio-icon fa fa-volume-up" @click="volume = 0"></i>
@@ -44,22 +44,24 @@
 </template>
 
 <script>
+import utils from '../../api/utils';
+
 export default {
-  name: "lazy-audio-player",
+  name: 'lazy-audio-player',
   data() {
     return {
       imgLoaded: false,
       currentlyPlaying: false,
       currentlyStopped: false,
-      currentTime: "00:00",
-      checkingCurrentPositionInTrack: "",
-      trackDuration: "00:00",
+      currentTime: '00:00',
+      checkingCurrentPositionInTrack: '',
+      trackDuration: '00:00',
       currentProgressBar: 0,
       volume: 10,
       bufferPercent: 0,
       isPlaylistActive: false,
       currentSong: 0,
-      audioFile: ""
+      audioFile: '',
     };
   },
   watch: {
@@ -74,12 +76,15 @@ export default {
         this.changeSong();
         this.audio.loop = false;
       }
-    }
+    },
   },
   computed: {
+    search() {
+      return this.$store.state.search;
+    },
     musicPlaylist: function() {
       return this.$store.state.content.audio.filter(
-        item => item.id == this.$route.query.a
+        item => item.id == this.$route.query.a,
       );
     },
     theme() {
@@ -90,7 +95,7 @@ export default {
     },
     progress() {
       return this.$refs.progress;
-    }
+    },
   },
   methods: {
     scrub(event) {
@@ -144,7 +149,7 @@ export default {
         this.stopAudio();
         this.currentSong = index;
       }
-      this.audioFile = this.musicPlaylist[this.currentSong].audioFile;
+      this.audioFile = '/' + this.musicPlaylist[this.currentSong].audioFile;
       this.audio.src = this.audioFile;
       this.audio.volume = this.volume / 10;
       if (wasPlaying) {
@@ -158,7 +163,7 @@ export default {
       return false;
     },
     getCurrentSong: function(currentSong) {
-      return this.musicPlaylist[currentSong].audioFile;
+      return '/' + this.musicPlaylist[currentSong].audioFile;
     },
     playAudio: function() {
       if (
@@ -204,14 +209,14 @@ export default {
       let cursecs = Math.floor(this.audio.currentTime - curmins * 60);
 
       if (cursecs < 10) {
-        cursecs = "0" + cursecs;
+        cursecs = '0' + cursecs;
       }
 
       if (curmins < 10) {
-        curmins = "0" + curmins;
+        curmins = '0' + curmins;
       }
 
-      this.currentTime = curmins + ":" + cursecs;
+      this.currentTime = curmins + ':' + cursecs;
     },
     loadedmetadata() {
       this.currentlyPlaying = true;
@@ -220,18 +225,36 @@ export default {
       let dursecs = Math.floor(this.audio.duration - durmins * 60);
 
       if (dursecs < 10) {
-        dursecs = "0" + dursecs;
+        dursecs = '0' + dursecs;
       }
       if (durmins < 10) {
-        durmins = "0" + durmins;
+        durmins = '0' + durmins;
       }
-      this.trackDuration = durmins + ":" + dursecs;
+      this.trackDuration = durmins + ':' + dursecs;
     },
+    halfTime: new utils().debounce(async function() {
+      await this.$store.dispatch(
+        'UPDATE_VIEWS_AUDIO',
+        this.musicPlaylist[this.currentSong].id,
+      );
+    }, 2000),
     handleProgress() {
+      if (
+        Math.floor(this.audio.currentTime) >=
+          Math.floor(this.audio.duration / 2) - 5 &&
+        Math.floor(this.audio.currentTime) <=
+          Math.ceil(this.audio.duration / 2) + 5
+      ) {
+        if (Math.floor(this.audio.currentTime) != 0) {
+          this.halfTime();
+        }
+      }
+
       const percent = (this.audio.currentTime / this.audio.duration) * 100;
       this.currentProgressBar = parseInt(percent);
     },
     detectKeypress(event) {
+      if (this.search != '') return false;
       if (event.keyCode == 32) {
         event.preventDefault();
         this.playAudio();
@@ -242,55 +265,40 @@ export default {
         event.preventDefault();
         this.prevSong();
       }
-    }
+    },
   },
   async mounted() {
     if (!this.$route.query.a) {
-      this.$router.push("/app/@error");
+      this.$router.push('/app/@error');
     }
 
-    // this.$nextTick(()=>{
-    //       this.changeSong();
-    //   this.audio.loop = false;
-    // })
-    // window.addEventListener("mousedown", function(event) {
-    //   if (!isDraggable(event.target)) return false;
+    // this.changeSong();
 
-    //   currentlyDragged = event.target;
-    //   let handleMethod = currentlyDragged.dataset.method;
-
-    //   this.addEventListener("mousemove", window[handleMethod], false);
-
-    //   window.addEventListener(
-    //     "mouseup",
-    //     () => {
-    //       currentlyDragged = false;
-    //       window.removeEventListener("mousemove", window[handleMethod], false);
-    //     },
-    //     false
-    //   );
-    // });
-    window.addEventListener("keydown", this.detectKeypress);
-    this.audio.addEventListener("ended", this.handleEnded);
-    this.audio.addEventListener("timeupdate", this.currTime);
-    this.audio.addEventListener("progress", this.updateBuffer);
-    this.audio.addEventListener("loadedmetadata", this.loadedmetadata);
-    this.audio.addEventListener("timeupdate", this.handleProgress);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', this.detectKeypress);
+    }
+    this.audio.addEventListener('ended', this.handleEnded);
+    this.audio.addEventListener('timeupdate', this.currTime);
+    this.audio.addEventListener('progress', this.updateBuffer);
+    this.audio.addEventListener('loadedmetadata', this.loadedmetadata);
+    this.audio.addEventListener('timeupdate', this.handleProgress);
   },
   filters: {
     fancyTimeFormat: function(s) {
-      return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
-    }
+      return (s - (s %= 60)) / 60 + (9 < s ? ':' : ':0') + s;
+    },
   },
   beforeDestroy: function() {
     this.stopAudio();
-    window.removeEventListener("keydown", this.detectKeypress);
-    this.audio.removeEventListener("ended", this.handleEnded);
-    this.audio.removeEventListener("timeupdate", this.currTime);
-    this.audio.removeEventListener("progress", this.updateBuffer);
-    this.audio.removeEventListener("loadedmetadata", this.loadedmetadata);
-    this.audio.removeEventListener("timeupdate", this.handleProgress);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('keydown', this.detectKeypress);
+    }
+    this.audio.removeEventListener('ended', this.handleEnded);
+    this.audio.removeEventListener('timeupdate', this.currTime);
+    this.audio.removeEventListener('progress', this.updateBuffer);
+    this.audio.removeEventListener('loadedmetadata', this.loadedmetadata);
+    this.audio.removeEventListener('timeupdate', this.handleProgress);
     clearTimeout(this.checkingCurrentPositionInTrack);
-  }
+  },
 };
 </script>

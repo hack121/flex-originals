@@ -1,6 +1,6 @@
 <template>
   <div :class="`settings content ${theme}`">
-    <div class="inner">
+    <div class="inner" v-show="user.username">
       <div class="settings__wrapper">
         <div :class="`card ${theme}`">
           <div class="card__body">
@@ -15,8 +15,9 @@
                 <div class="form-item">
                   <div class="account__info">
                     <div class="avatar">
-                      <img class="account__avatar" :src="settings.profileAvatar" />
-                      <!-- <span class="avatar__change">Change Avatar</span> -->
+                      <div class="account__avatar" alt="logo">
+                        <lazy-image :src="settings.profileAvatar"></lazy-image>
+                      </div>
                     </div>
                     <div class="email__info">
                       <p>{{user.realm}} ({{user.username }})</p>
@@ -26,10 +27,6 @@
                       <button class="fo-settings-button info" @click="logout">Log Out</button>
                     </div>
                   </div>
-                  <!-- <label class="form-item__label">Start at login</label>
-                  <div class="form-item__control toggle">
-                    <div class="toggle__handle"></div>
-                  </div>-->
                 </div>
                 <div class="form-item">
                   <label class="form-item__label">Enable Email Notifications</label>
@@ -134,60 +131,6 @@
                 </div>
               </div>
               <div class="grid grid--half">
-                <!-- <h3>Performance</h3> -->
-                <!-- <div class="form-item">
-                  <label class="form-item__label">Threshold level</label>
-                  <div class="form-item__control">
-                    <small>
-                      <strong>
-                        <span class="slider__value">500</span>
-                        <span>mb</span>
-                      </strong>
-                    </small>
-                  </div>
-                  <div class="slider">
-                    <input class="slider__input" type="range" value="50" min="0" max="100" />
-                    <div ref="sliderPos" class="slider__positive" style="width: 50%;"></div> 
-                  </div>
-                </div>-->
-                <!-- <p>
-                  <small>If the available memory goes below this amount, the status bar text will turn red.</small>
-                </p>
-                <div class="form-item">
-                  <label class="form-item__label">Auto clean</label>
-                  <div class="form-item__control toggle">
-                    <div class="toggle__handle"></div>
-                  </div>
-                </div>
-                <p>
-                  <small>Automatically clean when available memory drops below the above threshold. Auto clean is limited to once every 3 minutes.</small>
-                </p>
-                <div class="form-item">
-                  <label class="form-item__label">Disable auto clean cooldown</label>
-                  <div class="form-item__control toggle">
-                    <div class="toggle__handle"></div>
-                  </div>
-                </div>
-                <p>
-                  <small>
-                    Auto clean cooldown:
-                    <strong>136 seconds</strong>
-                  </small>
-                </p>
-                <div class="form-item">
-                  <label class="form-item__label">Refresh interval</label>
-                  <div class="form-item__control">
-                    <small>
-                      <strong>
-                        <span class="slider__value">5</span>
-                        <span>&nbsp;seconds</span>
-                      </strong>
-                    </small>
-                  </div>
-                </div>
-                <p>
-                  <small>If the available memory goes below this amount, the status bar text will turn red.</small>
-                </p>-->
                 <h3>Security</h3>
                 <p>Two-factor authentication</p>
                 <p>
@@ -222,10 +165,10 @@
 </template>
 
 <script>
-import * as types from "./../../../store/mutation-types";
+import * as types from './../../../store/mutation-types';
 
 export default {
-  name: "media-settings",
+  name: 'fo-settings',
   data() {
     return {};
   },
@@ -234,34 +177,34 @@ export default {
       return this.$store.state.settings;
     },
     user() {
-      return this.$store.state.user;
+      return this.$user.getUser();
     },
-       theme() {
+    theme() {
       return this.$store.state.theme;
-    }
+    },
   },
   methods: {
     async logout() {
-      await this.$api.logout('/app/@home?u=logout');
+      await this.$user.logout('/app/@home?u=logout');
     },
     deleteAllSession() {
-      this.$store.commit(types.SHOW_MODAL, { state: true, type: "MDelete" });
+      this.$store.commit(types.SHOW_MODAL, { state: true, type: 'MDelete' });
     },
     async save() {
       const payload = {};
-      payload.id = this.$api.webStorage.local.get("$userId");
+      payload.id = this.$user.get('$userId');
       payload.newSettings = this.settings;
-     const settings = await this.$store.dispatch("updateSettings", payload);
+      const settings = await this.$store.dispatch('UPDATE_SETTINGS', payload);
 
       this.$store.commit(types.SET_SETTINGS, settings);
-    }
+    },
   },
-  async created() {
-    const settings = await this.$store.dispatch("findSettings", {
-      uid: this.$api.webStorage.local.get("$userId")
+ async beforeMount() {
+   const settings = await this.$store.dispatch('FIND_SETTINGS', {
+     uid: this.$user.get('$userId'),
     });
 
-    this.$store.commit(types.SET_SETTINGS, settings);
-  }
+   this.$store.commit(types.SET_SETTINGS, settings);
+ },
 };
 </script>

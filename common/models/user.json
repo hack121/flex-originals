@@ -22,15 +22,41 @@
       "model": "videos",
       "foreignKey": "videoOwnerId"
     },
-    "likeVideos": {
+    "follow": {
       "type": "hasMany",
-      "model": "likeVideo",
-      "foreignKey": "likedUserId"
+      "model": "follow",
+      "foreignKey": "followOwnerId"
+    },
+    "channel": {
+      "type": "hasMany",
+      "model": "follow",
+      "foreignKey": "channel"
     },
     "followers": {
       "type": "hasMany",
       "model": "followers",
       "foreignKey": "followUserId"
+    },
+    "videoLikes": {
+      "type": "hasMany",
+      "model": "videoLike",
+      "foreignKey": "videoUserLike",
+      "options": {
+        "nestRemoting": true
+      }
+    },
+    "audioLikes": {
+      "type": "hasMany",
+      "model": "audioLike",
+      "foreignKey": "audioUserLike",
+      "options": {
+        "nestRemoting": true
+      }
+    },
+    "videoComments": {
+      "type": "hasMany",
+      "model": "videoComment",
+      "foreignKey": "videoCommentUserId"
     }
   },
   "acls": [
