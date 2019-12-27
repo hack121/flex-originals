@@ -1,22 +1,18 @@
 <template>
-  <menu type="toolbar" :class="`menu ${theme}`">
+  <menu type="toolbar" class="menu">
     <div @click="toggleMenu" style="cursor: pointer; margin-right:30px;">
       <i class="fas fa-align-justify"></i>
     </div>
-    <button :class="`menu__button ${theme}`">
-      <i class="fas fa-fire"></i>Trending
-    </button>
-    <button :class="`menu__button ${theme}`">
+    <button class="menu__button "><i class="fas fa-fire"></i>Trending</button>
+    <button class="menu__button">
       <i class="far fa-clock"></i>Watch Later
     </button>
-    <button :class="`menu__button ${theme}`">
+    <button class="menu__button">
       <i class="far fa-heart"></i>Liked Videos
     </button>
-    <button :class="`menu__button ${theme}`">
-      <i class="fab fa-rev"></i>New Releases
-    </button>
+    <button class="menu__button"><i class="fab fa-rev"></i>New Releases</button>
     <input type="text" placeholder="Search...." v-model="search" />
-    <!-- <div :class="`menu-right ${theme}`"> -->
+    <!-- <div class="menu-right"> -->
     <!-- <span class="icon">
         <i class="fas fa-search search__icon"></i>
       </span>
@@ -34,6 +30,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import * as types from './../../../store/mutation-types';
+import utils from './../../../api/utils';
 
 export default {
   name: 'toolbar',
@@ -43,7 +40,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['isMobile', 'isAuthenticated', 'theme']),
+    ...mapGetters(['isMobile', 'isAuthenticated']),
     search: {
       set(val) {
         this.$store.commit(types.SET_SEARCH_QUERY, val);
@@ -51,9 +48,6 @@ export default {
       get() {
         return this.$store.state.search;
       },
-    },
-    theme() {
-      return this.$store.state.theme;
     },
   },
   methods: {
@@ -68,9 +62,15 @@ export default {
         window.localStorage.setItem('APP_DRAWER', true);
       }
     },
+    onresize: new utils().debounce(async function(event) {
+      if (this.appDrawer && event.target.innerWidth < 1000) {
+        this.toggleMenu();
+      }
+    }, 100),
   },
   beforeMount() {
     if (typeof window !== 'undefined') {
+      if (this.$route.name == '@watch') return false;
       if (window.localStorage.getItem('APP_DRAWER') == 'true') {
         this.appDrawer = true;
       } else if (window.localStorage.getItem('APP_DRAWER') == 'false') {
@@ -80,6 +80,15 @@ export default {
       }
     }
   },
+  created() {
+    if (typeof window != 'undefined') {
+      window.addEventListener('resize', this.onresize);
+    }
+  },
+  beforeDestroy() {
+    if (typeof window != 'undefined') {
+      window.removeEventListener('resize', this.onresize);
+    }
+  },
 };
 </script>
-

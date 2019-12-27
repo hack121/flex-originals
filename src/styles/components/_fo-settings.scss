@@ -46,10 +46,6 @@
       flex-direction: row;
       justify-content: space-between;
 
-      &.light {
-        color: black !important;
-      }
-
       @media screen and (max-width: 900px) {
         flex-direction: column;
       }
@@ -91,19 +87,25 @@
 
       .video__upload__progress {
         width: 100%;
-        height: 30px;
-        margin: 20px 0;
+        margin: 50px 0;
+        border-radius: 5px;
         background-color: #1e2124;
 
         .upload__progress {
           position: relative;
-          height: 30px;
+          border-radius: 5px;
           background-color: $color-theme;
-          width: 0;
-          padding: 7px 0;
+          box-shadow: 0px 0px 10px $color-theme;
+          height: 0;
+          padding: 2px 0;
           text-align: center;
           -webkit-transition: width 1s;
           transition: width 1s;
+
+          &.done {
+            background-color: $color-active;
+            box-shadow: 0px 0px 10px $color-active;
+          }
         }
       }
 
@@ -134,7 +136,6 @@
             margin: 10px 0;
             border-radius: $radius;
             border: 1px solid lightgray;
-            // background-color: $color-primary;
             font-size: 16px;
 
             &:not([type='submit']) {
@@ -237,9 +238,7 @@
       }
 
       &__control__input {
-        // color: white;
         height: 1.9rem;
-        border-radius: 0.25rem;
         padding: 0 0.5rem;
         border: 1px solid lightgrey;
         font-family: inherit;
