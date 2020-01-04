@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-echo 'Creating application user and db'
+echo 'Creating application user and db.'
+ 
 
 mongo ${APP_MONGO_DB} \
         --host localhost \

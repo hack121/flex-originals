@@ -2,11 +2,11 @@
 
 module.exports = {
   mongodb: {
-    host: process.env.MONGODB_HOST || "localhost",
-    port: process.env.MONGODB_PORT || 27017,
-    database: process.env.MONGODB_DATABASE || "flexoriginals",
-    user: process.env.MONGODB_DATABASE_USERNAME || "root",
-    password: process.env.MONGODB_DATABASE_PASSWORD || "",
+    host: process.env.MONGO_HOST || "localhost",
+    port: process.env.MONGO_PORT || 27017,
+    database: process.env.APP_MONGO_DB || "flexoriginalsDev",
+    user: process.env.APP_MONGO_USER || "root",
+    password: process.env.APP_MONGO_PASS || "",
     name: "mongodb",
     connector: "mongodb",
     useNewUrlParser: true,

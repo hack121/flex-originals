@@ -25,7 +25,7 @@ export default class handleError {
     }
 
     let errorData = {};
-    let statusCode = error.response.status;
+    let statusCode = error.response.status;;
 
     try {
       errorData = {
@@ -46,7 +46,7 @@ export default class handleError {
         break;
       case 504:
         errorData.data = 'Please wait.'
-        errorData.color = '';
+        errorData.color = null;
         break;
       case 401:
       //  this.commit(types.SHOW_MODAL, { state: true, type: 'MLogin' });
