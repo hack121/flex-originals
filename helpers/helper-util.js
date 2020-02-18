@@ -22,6 +22,7 @@ module.exports = {
       .update(current_date + random)
       .digest('hex');
   },
+
   encrypt(text) {
     let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
     let encrypted = cipher.update(text);
@@ -51,19 +52,19 @@ module.exports = {
       return url.format({
         protocol: req.protocol,
         hostname: req.hostname,
-        pathname: req.originalUrl,
+        pathname: req.originalUrl
       });
     }
     return url.format({
       protocol: req.protocol,
-      hostname: req.hostname,
+      hostname: req.hostname
     });
   },
 
   getRandomAlphaNumericString(length, charset) {
     return randomstring.generate({
       charset: charset || '0123456789abcdefghijklmnopqrstuvwxyz',
-      length: length || 8,
+      length: length || 8
     });
   },
 
@@ -71,20 +72,19 @@ module.exports = {
     return new Promise((resolve, reject) =>
       connector.query(sql, params, (err, data) => {
         if (err) {
-          console.log(err); // eslint-disable-line no-console
           return reject(err);
         }
         return resolve(data);
-      }),
+      })
     );
   },
 
   getMD5HashSync(data, salt = 'SONAMGUPTABEWAFAHAI') {
-    if (data == null) data = 'N/A'; // eslint-disable-line no-param-reassign
-    data = data.toString() + salt; // eslint-disable-line no-param-reassign
+    if (data == null) data = 'N/A';
+    data = data.toString() + salt;
     return crypto
       .createHash('md5')
       .update(data)
       .digest('hex');
-  },
+  }
 };

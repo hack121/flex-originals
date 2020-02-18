@@ -19,7 +19,13 @@ module.exports = {
     mail: {
       user: process.env.APP_EMAIL_ID || "myemail@email.com.br",
       pass: process.env.APP_EMAIL_PASSWORD || "mypassword"
-    }
+    },
+    static: [
+      {
+        dir: "../uploads",
+        url: "/uploads"
+      }
+    ]
   },
   production: {
     db: {
@@ -29,7 +35,13 @@ module.exports = {
     mail: {
       user: process.env.APP_EMAIL_ID || "myemail@email.com.br",
       pass: process.env.APP_EMAIL_PASSWORD || "mypassword"
-    }
+    },
+    static: [
+      {
+        dir: "../uploads",
+        url: "/uploads"
+      }
+    ]
   },
   staging: {
     db: {
@@ -39,6 +51,12 @@ module.exports = {
     mail: {
       user: process.env.APP_EMAIL_ID || "myemail@email.com.br",
       pass: process.env.APP_EMAIL_PASSWORD || "mypassword"
-    }
+    },
+    static: [
+      {
+        dir: "../uploads",
+        url: "/uploads"
+      }
+    ]
   }
 };

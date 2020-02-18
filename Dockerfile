@@ -1,19 +1,7 @@
-FROM node:10
+FROM node:alpine
 
-WORKDIR /usr/src
+COPY . /opt
+WORKDIR /opt
+RUN npm install --production --silent
 
-COPY package*.json ./
-
-RUN apt-get -y update
-RUN apt-get -y upgrade
-RUN apt-get install -y ffmpeg
-
-RUN npm install
-
-COPY . .
-
-EXPOSE 3333
-EXPOSE 3355
-EXPOSE 3000
-
-CMD ["npm", "run", "prod"]
+CMD ["npm", "start"]

@@ -1,74 +1,20 @@
-version: "3"
+version: '2'
 services:
-  flexclient:
-    container_name: flexclient
-    image: flexclient
-    restart: always
-    build:
-      context: .
-      dockerfile: ./Docker/CLIENT/Dockerfile
+  mongodb: 
+    image: 'mongo'
     ports:
-      - "${APP_CLIENT_PORT}:${APP_CLIENT_PORT}"
-    links:
-      - flexapi
-      - flexredis
-    volumes:
-      - ./uploads:/usr/src/uploads
-
-  flexapi:
-    container_name: flexapi
-    image: flexapi
-    restart: always
-    build:
-      context: .
-      dockerfile: ./Docker/API/Dockerfile
+      - '27017:27017'
+    container_name: 'mongodb'
+  api: 
+    build: .
+    image: 'auth-node-api'
     ports:
-      - "${APP_API_PORT}:${APP_API_PORT}"
-    links:
-      - mongo
-      - flexredis
-    volumes:
-      - ./uploads:/usr/src/uploads
-
-  flexcdn:
-    container_name: flexcdn
-    image: flexcdn
-    restart: always
-    build:
-      context: .
-      dockerfile: ./Docker/CDN/Dockerfile
-    ports:
-      - "${APP_CDN_PORT}:${APP_CDN_PORT}"
-    links:
-      - mongo
-      - flexredis
-    volumes:
-      - ./uploads:/usr/src/uploads
-
-  flexredis:
-    container_name: flexredis
-    restart: always
-    image: redis
-    command: redis-server --requirepass ${REDIS_PASSWORD}
-    ports:
-      - '6379:6379'
-    volumes: 
-      - ./redis/data:/data
-
-  mongo:
-    container_name: mongo
-    env_file: .env
+      - '3000:3000'
+    container_name: 'auth-node-api'
     environment:
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_NON_ROOT_USERNAME: ${MONGO_NON_ROOT_USERNAME}
-      MONGO_NON_ROOT_PASSWORD: ${MONGO_NON_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-    image: mongo
-    ports:
-      - "27017:27017"
-    restart: always
-    volumes:
-      - ./scripts/mongo/mongo-user-entrypoint.sh:/docker-entrypoint-initdb.d/mongo-user-entrypoint.sh
-      - ./mongodb/data:/data/db
-      - ./mongodb/mongodb_config:/data/configdb
+      - NODE_ENV=development
+      - PORT=3000
+      - JWT_SECRET=devmode
+      - MONGO_URI=mongodb://mongodb:27017/
+    depends_on:
+      - mongodb
