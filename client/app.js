@@ -19,6 +19,7 @@ app.use(favicon(resolve('../public/favicon.ico')));
 app.use('/', serve('../public'));
 app.use('/dist', serve('../dist'));
 app.use('/sw.js', serve('../dist/sw.js'));
+app.use('/workbox-*.js', serve('../dist'));
 app.use('/public', serve('../assets'));
 
 let renderer;
