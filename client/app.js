@@ -15,12 +15,17 @@ const context = {
 };
 
 app.use(compression());
-app.use(favicon(resolve('../public/favicon.ico')));
-app.use('/', serve('../public'));
-app.use('/dist', serve('../dist'));
-app.use('/sw.js', serve('../dist/sw.js'));
-app.use('/workbox-*.js', serve('../dist'));
-app.use('/public', serve('../assets'));
+app.use(favicon(resolve('../../public/favicon.ico')));
+app.use('/manifest.json', serve('../../public/manifest.json'));
+app.use(
+  '/icons/icon-512x512.png',
+  serve('../../public/icons/icon-512x512.png'),
+);
+app.use(
+  '/icons/icon-192x192.png',
+  serve('../../public/icons/icon-192x192.png'),
+);
+app.use('/', serve('../../dist'));
 
 let renderer;
 let readyPromise;
