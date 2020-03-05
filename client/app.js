@@ -19,6 +19,7 @@ app.use(favicon(resolve('../public/favicon.ico')));
 app.use('/', serve('../public'));
 app.use('/', serve('../dist'));
 app.use('/dist', serve('../dist'));
+app.use('/public', serve('../assets'));
 
 let renderer;
 let readyPromise;
